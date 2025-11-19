@@ -1,10 +1,8 @@
-export interface GetItemsParams {
+import type { IItem } from '../types'
+
+export type GetItemsParams = {
   limit?: number
   offset?: number
 }
 
-export interface GetItemsResult {
-  id: string
-  name: string
-  created_at: string
-}
+export type GetItemsResult = IItem[]
