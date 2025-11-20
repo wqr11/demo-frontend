@@ -11,17 +11,18 @@ const [delayMs, setDelayMs] = useUnit([testModel.$delayMs, testModel.setDelayMs]
 
 const [toggle, isRunning] = useUnit([testModel.toggle, testModel.$isRunning])
 
-const [sentRequests, successRequests, failRequests] = useUnit([
+const [sentRequests, successRequests, failRequests, executionTime] = useUnit([
   testModel.$sentRequests,
   testModel.$successRequests,
   testModel.$failRequests,
+  testModel.$executionTime,
 ])
 </script>
 
 <template>
   <main class="main">
     <div class="layout">
-      <div class="sidebar">
+      <div class="sidebar" style="grid-area: controls">
         <h3>Нагрузочный тест</h3>
         <div class="inputs">
           <InputField
@@ -37,7 +38,7 @@ const [sentRequests, successRequests, failRequests] = useUnit([
           <button @click="toggle">{{ !isRunning ? 'Старт нагрузочного теста' : 'Стоп' }}</button>
         </div>
       </div>
-      <div class="sidebar">
+      <div class="sidebar" style="grid-area: metrics">
         <h3>Метрики</h3>
         <div class="metric-grid">
           <div class="metric-item">
@@ -52,10 +53,10 @@ const [sentRequests, successRequests, failRequests] = useUnit([
             <span class="metric-label">Ошибки: </span>
             <span class="metric-value error">{{ failRequests }}</span>
           </div>
-          <!-- <div class="metric-item">
+          <div class="metric-item">
             <span class="metric-label">Время выполнения:</span>
-            <span class="metric-value time">{{ executionTime }}</span>
-          </div> -->
+            <span class="metric-value time">{{ (executionTime / 1_000).toFixed(1) }} с.</span>
+          </div>
         </div>
       </div>
     </div>
@@ -82,18 +83,25 @@ h3 {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 60vw;
-  height: 60vh;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
 }
 
 .layout {
-  width: calc(100% - 20px);
-  height: calc(100% - 20px);
+  width: 60%;
+  height: 60%;
   display: grid;
   gap: 20px;
-  grid-template-columns: minmax(100px, 320px) 1fr;
+  grid-template-areas: 'controls metrics';
+  grid-template-columns: 1fr 2fr;
   grid-template-rows: 1fr;
+  @media (max-width: 1280px) {
+    grid-template: 'controls' 'metrics';
+  }
+  @media (max-width: 540px) {
+    width: 90%;
+  }
 }
 
 .sidebar {

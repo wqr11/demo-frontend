@@ -5,4 +5,4 @@ export type GetItemsParams = {
   offset?: number
 }
 
-export type GetItemsResult = IItem[]
+export type GetItemsResult = { items: IItem[] }

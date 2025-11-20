@@ -1,5 +1,8 @@
 import { itemModel } from '@/entities/items'
 import { createStore, createEvent, createEffect, sample, combine } from 'effector'
+import { interval } from 'patronum'
+
+export const TIME_UNIT_MS = 100 // Stopwatch time unit
 
 export const toggle = createEvent<void>()
 export const run = createEvent<void>()
@@ -27,7 +30,7 @@ export const runFx = createEffect(
 
     const intervalId = setInterval(() => {
       if (count < requestsCount) {
-        itemModel.getItemsFx()
+        itemModel.getPagedItemsFx()
         count++
       } else {
         stop()
@@ -38,7 +41,7 @@ export const runFx = createEffect(
   },
 )
 
-export const $interval = createStore<number | null>(null)
+export const $requestIntervalId = createStore<number | null>(null)
   .on(runFx.doneData, (_, data) => data)
   .on(stopFx.doneData, (state, stopped) => (stopped ? null : state))
 
@@ -49,14 +52,9 @@ export const setDelayMs = createEvent<number>()
 export const $delayMs = createStore(0).on(setDelayMs, (_, data) => data)
 
 export const $isRunning = combine(
-  $interval,
+  $requestIntervalId,
   (interval) => typeof interval === 'number' && Number.isFinite(interval),
 )
-
-export const $remaining = createStore<number>(0)
-  .on(runFx, (_, { requestsCount }) => requestsCount)
-  .on(itemModel.getItemsFx.done, (state) => state - 1)
-  .reset(stopFx.doneData)
 
 export const $sentRequests = createStore(0).on(itemModel.getItemsFx, (state) => state + 1)
 export const $successRequests = createStore(0).on(
@@ -64,6 +62,17 @@ export const $successRequests = createStore(0).on(
   (state) => state + 1,
 )
 export const $failRequests = createStore(0).on(itemModel.getItemsFx.fail, (state) => state + 1)
+
+export const $stopwatch = interval({
+  start: runFx.done,
+  stop: stopFx.done,
+  timeout: TIME_UNIT_MS,
+})
+
+// In milliseconds
+export const $executionTime = createStore<number>(0)
+  .on($stopwatch.tick, (state) => state + TIME_UNIT_MS)
+  .reset(runFx)
 
 sample({
   clock: toggle,
@@ -73,7 +82,7 @@ sample({
 
 sample({
   clock: stop,
-  source: $interval,
+  source: $requestIntervalId,
   filter: (id) => !!id,
   fn: (id) => id!,
   target: [stopFx],
@@ -84,11 +93,4 @@ sample({
   source: { requestsCount: $requestsCount, delayMs: $delayMs },
   filter: ({ requestsCount, delayMs }) => !!requestsCount && !!delayMs,
   target: runFx,
-})
-
-sample({
-  clock: $remaining,
-  source: $isRunning,
-  filter: (isRunning, remaining) => remaining === 0 && isRunning,
-  target: stop,
 })

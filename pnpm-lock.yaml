@@ -20,6 +20,9 @@ importers:
       effector-vue:
         specifier: ^23.1.1
         version: 23.1.1(@vue/reactivity@3.5.24)(@vue/runtime-core@3.5.24)(effector@23.4.4)(vue@3.5.24(typescript@5.9.3))
+      patronum:
+        specifier: ^2.3.0
+        version: 2.3.0(effector@23.4.4)
       vue:
         specifier: ^3.5.22
         version: 3.5.24(typescript@5.9.3)
@@ -1484,6 +1487,11 @@ packages:
 
   pathe@2.0.3:
     resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
+
+  patronum@2.3.0:
+    resolution: {integrity: sha512-BfKIOpoymVz6XnkOn8Fi5QZ1a3r/3lXdd8BcdHmYDbIXPTIRnD1EPFBFev/DheWnOge6/ZswEqgNF2ANLGOxLw==}
+    peerDependencies:
+      effector: ^23
 
   perfect-debounce@2.0.0:
     resolution: {integrity: sha512-fkEH/OBiKrqqI/yIgjR92lMfs2K8105zt/VT6+7eTjNwisrsh47CeIED9z58zI7DfKdH3uHAn25ziRZn3kgAow==}
@@ -3200,6 +3208,10 @@ snapshots:
   path-key@3.1.1: {}
 
   pathe@2.0.3: {}
+
+  patronum@2.3.0(effector@23.4.4):
+    dependencies:
+      effector: 23.4.4
 
   perfect-debounce@2.0.0: {}
 
